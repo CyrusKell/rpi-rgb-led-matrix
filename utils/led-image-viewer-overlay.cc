@@ -39,6 +39,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstring>
 
 #include <Magick++.h>
 #include <magick/image.h>
@@ -210,9 +211,8 @@ void DisplayAnimation(const FileInfo *file,
 
       // calculate centered x coord
       int line_width = 0;
-      for(char c : line) {
-        line_width += font.CharacterWidth(c);
-	std::cout << c << " - " << font.CharacterWidth(c) << "\n";
+      for(int i = 0; i < strlen(line); i++ ) {
+        line_width += font.CharacterWidth(line[i]);
       }
       x = (64 - line_width) / 2;
 
@@ -223,12 +223,6 @@ void DisplayAnimation(const FileInfo *file,
       rgb_matrix::DrawText(offscreen_canvas, font, x, y + font.baseline(),
                          color, NULL, line,
                          letter_spacing);
-
-      // for(int i = 8; i <= 24; i++) {
-      //   for(int j = 12; j <= 48; j++) {
-      //     offscreen_canvas->SetPixel(j, i, 255, 0, 0);
-      //   }
-      // }
 
       offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
                                              file->params.vsync_multiple);
