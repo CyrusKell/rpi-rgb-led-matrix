@@ -193,11 +193,25 @@ void DisplayAnimation(const FileInfo *file,
       const tmillis_t anim_delay_ms =
         override_anim_delay >= 0 ? override_anim_delay : delay_us / 1000;
       const tmillis_t start_wait_ms = GetTimeInMillis();
-
       offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
                                              file->params.vsync_multiple);
-
-      matrix->SetPixel(0, 0, 255, 0, 0);
+      // overlay
+      // matrix->SetPixel(0, 0, 255, 0, 0);
+      rgb_matrix::Font font;
+      string bdf_font_file = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x10.bdf";
+      if (!font.LoadFont(bdf_font_file)) {
+        fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
+        return;
+      }
+      int x = 12;
+      int y = 8;
+      Color bg_color(0, 0, 0);
+      string line = "10:46";
+      int letter_spacing = 0;
+      rgb_matrix::Color color(255, 255, 255);
+      rgb_matrix::DrawText(matrix, font, x, y + font.baseline(),
+                         color, &bg_color, line,
+                         letter_spacing);
 
       const tmillis_t time_already_spent = GetTimeInMillis() - start_wait_ms;
       SleepMillis(anim_delay_ms - time_already_spent);
