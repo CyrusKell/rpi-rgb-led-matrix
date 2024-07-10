@@ -203,25 +203,37 @@ void DisplayAnimation(const FileInfo *file,
         fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
         return;
       }
-      int x;
-      int y;
-      char line[] = "10:46";
+      int x1;
+      int y1;
+      char line1[] = "10:46";
+      char line2[] = "Jun 12";
       int letter_spacing = 0;
       rgb_matrix::Color color(255, 255, 255);
 
-      // calculate centered x coord
-      int line_width = 0;
-      for(int i = 0; i < strlen(line); i++ ) {
-        line_width += font.CharacterWidth(line[i]);
+      // calculate centered x-coords
+      int line1_width = 0;
+      for(int i = 0; i < strlen(line1); i++ ) {
+        line1_width += font.CharacterWidth(line1[i]);
       }
-      x = (64 - line_width) / 2;
+      x1 = (64 - line1_width) / 2;
 
-      // calculate centered y coord
-      y = (32 - font.baseline()) / 2;
+      int line2_width = 0;
+      for(int i = 0; i < strlen(line2); i++ ) {
+        line2_width += font.CharacterWidth(line2[i]);
+      }
+      x2 = (64 - line2_width) / 2;
+
+      // calculate centered y-coords for two lines of text with 2 pixel spacing
+      int line_spacing = 2;
+      y1 = (32 - (font.baseline() * 2 + line_spacing)) / 2;
+      y2 = y1 + font.baseline() + line_spacing;
 
 
-      rgb_matrix::DrawText(offscreen_canvas, font, x, y + font.baseline(),
-                         color, NULL, line,
+      rgb_matrix::DrawText(offscreen_canvas, font, x1, y1 + font.baseline(),
+                         color, NULL, line1,
+                         letter_spacing);
+      rgb_matrix::DrawText(offscreen_canvas, font, x2, y2 + font.baseline(),
+                         color, NULL, line2,
                          letter_spacing);
 
       offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
