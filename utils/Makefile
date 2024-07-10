@@ -1,6 +1,6 @@
 CXXFLAGS=-O3 -W -Wall -Wextra -Wno-unused-parameter -D_FILE_OFFSET_BITS=64
-OBJECTS=led-image-viewer.o text-scroller.o
-BINARIES=led-image-viewer text-scroller
+OBJECTS=led-image-viewer.o led-image-viewer-overlay.o text-scroller.o
+BINARIES=led-image-viewer led-image-viewer-overlay text-scroller
 
 OPTIONAL_OBJECTS=video-viewer.o
 OPTIONAL_BINARIES=video-viewer
