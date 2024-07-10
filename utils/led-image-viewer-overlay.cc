@@ -194,33 +194,39 @@ void DisplayAnimation(const FileInfo *file,
         override_anim_delay >= 0 ? override_anim_delay : delay_us / 1000;
       const tmillis_t start_wait_ms = GetTimeInMillis();
 
-      // overlay
-      rgb_matrix::Font font;
-      char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x10.bdf";
-      if (!font.LoadFont(bdf_font_file)) {
-        fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
-        return;
+      // // overlay
+      // rgb_matrix::Font font;
+      // char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x10.bdf";
+      // if (!font.LoadFont(bdf_font_file)) {
+      //   fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
+      //   return;
+      // }
+      // int x;
+      // int y;
+      // char line[] = "10:46";
+      // int letter_spacing = 0;
+      // rgb_matrix::Color color(255, 255, 255);
+
+      // // calculate centered x coord
+      // int line_width = 0;
+      // for(char c : line) {
+      //   line_width += font.CharacterWidth(c);
+      // }
+      // x = (64 - line_width) / 2;
+
+      // // calculate centered y coord
+      // y = (32 - font.baseline()) / 2;
+
+
+      // rgb_matrix::DrawText(offscreen_canvas, font, x, y + font.baseline(),
+      //                    color, NULL, line,
+      //                    letter_spacing);
+
+      for(int i = 8; i <= 24; i++) {
+        for(int j = 12; j <= 48; j++) {
+          offscreen_canvas->SetPixel(j, i, 255, 0, 0);
+        }
       }
-      int x;
-      int y;
-      char line[] = "10:46";
-      int letter_spacing = 0;
-      rgb_matrix::Color color(255, 255, 255);
-
-      // calculate centered x coord
-      int line_width = 0;
-      for(char c : line) {
-        line_width += font.CharacterWidth(c);
-      }
-      x = (64 - line_width) / 2;
-
-      // calculate centered y coord
-      y = (32 - font.baseline()) / 2;
-
-
-      rgb_matrix::DrawText(offscreen_canvas, font, x, y + font.baseline(),
-                         color, NULL, line,
-                         letter_spacing);
 
       offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
                                              file->params.vsync_multiple);

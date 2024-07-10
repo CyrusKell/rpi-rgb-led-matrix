@@ -180,7 +180,7 @@ int Font::CharacterWidth(uint32_t unicode_codepoint) const {
   return g ? g->device_width : -1;
 }
 
-int Font::DrawGlyph(Canvas *c, int x_pos, int y_pos,
+int Font::topDrawGlyph(Canvas *c, int x_pos, int y_pos,
                     const Color &color, const Color *bgcolor,
                     uint32_t unicode_codepoint) const {
   const Glyph *g = FindGlyph(unicode_codepoint);
