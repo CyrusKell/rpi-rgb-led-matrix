@@ -205,12 +205,11 @@ void DisplayAnimation(const FileInfo *file,
       }
       int x = 12;
       int y = 8;
-      rgb_matrix::Color bg_color(0, 0, 0);
       char line[] = "10:46";
       int letter_spacing = 0;
       rgb_matrix::Color color(255, 255, 255);
-      rgb_matrix::DrawText(matrix, font, x, y + font.baseline(),
-                         color, &bg_color, line,
+      rgb_matrix::DrawText(offscreen_canvas, font, x, y + font.baseline(),
+                         color, NULL, line,
                          letter_spacing);
 
       const tmillis_t time_already_spent = GetTimeInMillis() - start_wait_ms;
