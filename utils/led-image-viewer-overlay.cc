@@ -205,6 +205,8 @@ void DisplayAnimation(const FileInfo *file,
       }
       int x1;
       int y1;
+      int x2;
+      int y2;
       char line1[] = "10:46";
       char line2[] = "Jun 12";
       int letter_spacing = 0;
@@ -212,13 +214,13 @@ void DisplayAnimation(const FileInfo *file,
 
       // calculate centered x-coords
       int line1_width = 0;
-      for(int i = 0; i < strlen(line1); i++ ) {
+      for(unsigned int i = 0; i < strlen(line1); i++ ) {
         line1_width += font.CharacterWidth(line1[i]);
       }
       x1 = (64 - line1_width) / 2;
 
       int line2_width = 0;
-      for(int i = 0; i < strlen(line2); i++ ) {
+      for(unsigned int i = 0; i < strlen(line2); i++ ) {
         line2_width += font.CharacterWidth(line2[i]);
       }
       x2 = (64 - line2_width) / 2;
