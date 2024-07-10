@@ -195,18 +195,29 @@ void DisplayAnimation(const FileInfo *file,
       const tmillis_t start_wait_ms = GetTimeInMillis();
 
       // overlay
-      // matrix->SetPixel(0, 0, 255, 0, 0);
       rgb_matrix::Font font;
       char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x10.bdf";
       if (!font.LoadFont(bdf_font_file)) {
         fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
         return;
       }
-      int x = 12;
-      int y = 8;
+      int x;
+      int y;
       char line[] = "10:46";
       int letter_spacing = 0;
       rgb_matrix::Color color(255, 255, 255);
+
+      // calculate centered x coord
+      int line_width = 0;
+      for(char c : line) {
+        line_width += font.CharacterWidth(c);
+      }
+      x = (64 - line_width) / 2;
+
+      // calculate centered y coord
+      y = (32 - font.baseline()) / 2;
+
+
       rgb_matrix::DrawText(offscreen_canvas, font, x, y + font.baseline(),
                          color, NULL, line,
                          letter_spacing);
