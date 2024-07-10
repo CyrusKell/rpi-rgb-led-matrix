@@ -205,7 +205,7 @@ void DisplayAnimation(const FileInfo *file,
       }
       int x = 12;
       int y = 8;
-      Color bg_color(0, 0, 0);
+      rgb_matrix::Color bg_color(0, 0, 0);
       char[] line = "10:46";
       int letter_spacing = 0;
       rgb_matrix::Color color(255, 255, 255);
