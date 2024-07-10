@@ -198,7 +198,7 @@ void DisplayAnimation(const FileInfo *file,
       // overlay
       // matrix->SetPixel(0, 0, 255, 0, 0);
       rgb_matrix::Font font;
-      char[] bdf_font_file = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x10.bdf";
+      char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x10.bdf";
       if (!font.LoadFont(bdf_font_file)) {
         fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
         return;
@@ -206,7 +206,7 @@ void DisplayAnimation(const FileInfo *file,
       int x = 12;
       int y = 8;
       rgb_matrix::Color bg_color(0, 0, 0);
-      char[] line = "10:46";
+      char line[] = "10:46";
       int letter_spacing = 0;
       rgb_matrix::Color color(255, 255, 255);
       rgb_matrix::DrawText(matrix, font, x, y + font.baseline(),
