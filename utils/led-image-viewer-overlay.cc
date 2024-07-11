@@ -227,18 +227,25 @@ void DisplayAnimation(const FileInfo *file,
       for(unsigned int i = 0; i < strlen(line1); i++ ) {
         line1_width += font.CharacterWidth(line1[i]);
       }
-      x1 = (64 - line1_width) / 2;
+      // x1 = (64 - line1_width) / 2;
+      x1 = 0;
+
 
       int line2_width = 0;
       for(unsigned int i = 0; i < strlen(line2); i++ ) {
         line2_width += font.CharacterWidth(line2[i]);
       }
-      x2 = (64 - line2_width) / 2;
+      // x2 = (64 - line2_width) / 2;
+      x2 = 64 - line2_width;
+
 
       // calculate centered y-coords for two lines of text with 2 pixel spacing
-      int line_spacing = 2;
-      y1 = (32 - (font.baseline() * 2 + line_spacing)) / 2;
-      y2 = y1 + font.baseline() + line_spacing;
+      // int line_spacing = 2;
+      // y1 = (32 - (font.baseline() * 2 + line_spacing)) / 2;
+      // y2 = y1 + font.baseline() + line_spacing;
+      y1 = 0;
+      y2 = 0;
+      
 
 
       rgb_matrix::DrawText(offscreen_canvas, font, x1, y1 + font.baseline(),
