@@ -198,7 +198,7 @@ void DisplayAnimation(const FileInfo *file,
 
       // overlay
       rgb_matrix::Font font;
-      char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/6x9.bdf";
+      char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/tom-thumb.bdf";
       if (!font.LoadFont(bdf_font_file)) {
         fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
         return;
