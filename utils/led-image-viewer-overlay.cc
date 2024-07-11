@@ -39,6 +39,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <stdio.h>
+#include <time.h>
 #include <cstring>
 
 #include <Magick++.h>
@@ -207,10 +209,18 @@ void DisplayAnimation(const FileInfo *file,
       int y1;
       int x2;
       int y2;
-      char line1[] = "10:46";
-      char line2[] = "Jun 12";
       int letter_spacing = 0;
       rgb_matrix::Color color(255, 255, 255);
+
+      // get time
+      time_t rawtime;
+      struct tm * timeinfo;
+      char line1 [80];
+      char line2 [80];
+      time (&rawtime);
+      timeinfo = localtime (&rawtime);
+      strftime (line1,80,"%-I:%M",timeinfo);
+      strftime (line2,80,"%b %-d",timeinfo);
 
       // calculate centered x-coords
       int line1_width = 0;
