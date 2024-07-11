@@ -244,7 +244,7 @@ void DisplayAnimation(const FileInfo *file,
       // y1 = (32 - (font.baseline() * 2 + line_spacing)) / 2;
       // y2 = y1 + font.baseline() + line_spacing;
       y1 = 1;
-      y2 = 1;
+      y2 = 32 - font.baseline() - 1;
       
 
 
