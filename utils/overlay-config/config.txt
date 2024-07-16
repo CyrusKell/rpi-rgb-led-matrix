@@ -1,2 +1,1 @@
-night-mode=on
-audio=off
+night-mode=off
