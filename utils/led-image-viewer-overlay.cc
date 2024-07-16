@@ -180,7 +180,7 @@ static bool LoadImageAndScale(const char *filename,
 }
 
 void SetConfig(std::map<std::string, std::string> &config) {
-  std::string config_file_url = "./overlay-config/config.txt"
+  std::string config_file_url = "./overlay-config/config.txt";
   std::ifstream config_file (config_file_url);
 
   if (config_file.is_open())
