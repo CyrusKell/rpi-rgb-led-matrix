@@ -39,6 +39,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream> 
+#include <string>
 #include <stdio.h>
 #include <time.h>
 #include <cstring>
@@ -177,6 +179,23 @@ static bool LoadImageAndScale(const char *filename,
   return true;
 }
 
+void SetConfig(std::map<std::string, std::string> &config) {
+  std::string config_file_url = "./overlay-config/config.txt"
+  std::ifstream config_file (config_file_url);
+
+  if (config_file.is_open())
+  {
+      std::string line;
+      while(getline(config_file, line)){
+          auto delimiterPos = line.find("=");
+          auto key = line.substr(0, delimiterPos);
+          auto value = line.substr(delimiterPos + 1);
+          config[key] = value;
+      }
+      
+  }
+}
+
 void DisplayAnimation(const FileInfo *file,
                       RGBMatrix *matrix, FrameCanvas *offscreen_canvas) {
   const tmillis_t duration_ms = (file->is_multi_frame
@@ -186,6 +205,12 @@ void DisplayAnimation(const FileInfo *file,
   int loops = file->params.loops;
   const tmillis_t end_time_ms = GetTimeInMillis() + duration_ms;
   const tmillis_t override_anim_delay = file->params.anim_delay_ms;
+
+  tmillis_t config_check_time = GetTimeInMillis();
+  std::map<std::string, std::string> config;
+  SetConfig(&config);
+
+
   for (int k = 0;
        (loops < 0 || k < loops)
          && !interrupt_received
@@ -199,17 +224,21 @@ void DisplayAnimation(const FileInfo *file,
       const tmillis_t start_wait_ms = GetTimeInMillis();
 
       // overlay
+
+      // reload config settings if it has been 1 second since last config check
+      if(GetTimeInMillis() - config_check_time >= 1000) {
+        config_check_time = GetTimeInMillis();
+        SetConfig(&config);
+      }
+
+      // load font
       rgb_matrix::Font font;
       char bdf_font_file[] = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/fonts/fonts/04B_03__6pt.bdf";
       if (!font.LoadFont(bdf_font_file)) {
         fprintf(stderr, "Couldn't load font '%s'\n", bdf_font_file);
         return;
       }
-      int x1;
-      int y1;
-      int x2;
-      int y2;
-      int letter_spacing = 0;
+
       rgb_matrix::Color color(255, 255, 255);
 
       // get time
@@ -222,27 +251,32 @@ void DisplayAnimation(const FileInfo *file,
       strftime (line2,80,"%b %-d",timeinfo);
 
       // calculate coords for line1 at top left corner and line2 at bottom right
-      x1 = 1;
-      y1 = 1;
+      int x1 = 1;
+      int y1 = 1;
       int line2_width = 0;
       for(unsigned int i = 0; i < strlen(line2); i++ ) {
         line2_width += font.CharacterWidth(line2[i]);
       }
-      x2 = 64 - line2_width;
-      y2 = 32 - font.baseline() - 1;
+      int x2 = 64 - line2_width;
+      int y2 = 32 - font.baseline() - 1;
 
       // get time for line 1 separately to avoid time delays due to processing other lines
       time (&rawtime);
       timeinfo = localtime (&rawtime);
       strftime (line1,80,"%-I:%M",timeinfo);
 
+      // set everything to black if night mode is enabled
+      if(config["night-mode"] == "on") {
+        offscreen_canvas->Fill(0, 0, 0);
+      }
+
       // draw text
       rgb_matrix::DrawText(offscreen_canvas, font, x1, y1 + font.baseline(),
                          color, NULL, line1,
-                         letter_spacing);
+                         0);
       rgb_matrix::DrawText(offscreen_canvas, font, x2, y2 + font.baseline(),
                          color, NULL, line2,
-                         letter_spacing);
+                         0);
 
       offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
                                              file->params.vsync_multiple);
