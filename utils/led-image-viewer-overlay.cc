@@ -231,10 +231,10 @@ void DisplayAnimation(const FileInfo *file,
       x2 = 64 - line2_width;
       y2 = 32 - font.baseline() - 1;
 
-      // get time for line 1 separate to avoid time delays due to processing other lines
+      // get time for line 1 separately to avoid time delays due to processing other lines
       time (&rawtime);
       timeinfo = localtime (&rawtime);
-      strftime (line1,80,"%-I:%M:%S",timeinfo);
+      strftime (line1,80,"%-I:%M",timeinfo);
 
       // draw text
       rgb_matrix::DrawText(offscreen_canvas, font, x1, y1 + font.baseline(),
