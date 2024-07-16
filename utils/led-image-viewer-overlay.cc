@@ -219,35 +219,24 @@ void DisplayAnimation(const FileInfo *file,
       char line2 [80];
       time (&rawtime);
       timeinfo = localtime (&rawtime);
-      strftime (line1,80,"%-I:%M",timeinfo);
       strftime (line2,80,"%b %-d",timeinfo);
 
-      // calculate centered x-coords
-      int line1_width = 0;
-      for(unsigned int i = 0; i < strlen(line1); i++ ) {
-        line1_width += font.CharacterWidth(line1[i]);
-      }
-      // x1 = (64 - line1_width) / 2;
+      // calculate coords for line1 at top left corner and line2 at bottom right
       x1 = 1;
-
-
+      y1 = 1;
       int line2_width = 0;
       for(unsigned int i = 0; i < strlen(line2); i++ ) {
         line2_width += font.CharacterWidth(line2[i]);
       }
-      // x2 = (64 - line2_width) / 2;
-      x2 = 64 - line2_width - 1;
-
-
-      // calculate centered y-coords for two lines of text with 2 pixel spacing
-      // int line_spacing = 2;
-      // y1 = (32 - (font.baseline() * 2 + line_spacing)) / 2;
-      // y2 = y1 + font.baseline() + line_spacing;
-      y1 = 1;
+      x2 = 64 - line2_width;
       y2 = 32 - font.baseline() - 1;
-      
 
+      // get time for line 1 separate to avoid time delays due to processing other lines
+      time (&rawtime);
+      timeinfo = localtime (&rawtime);
+      strftime (line1,80,"%-I:%M:%S",timeinfo);
 
+      // draw text
       rgb_matrix::DrawText(offscreen_canvas, font, x1, y1 + font.baseline(),
                          color, NULL, line1,
                          letter_spacing);
