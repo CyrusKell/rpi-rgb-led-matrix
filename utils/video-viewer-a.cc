@@ -291,6 +291,7 @@ int main(int argc, char *argv[]) {
 
       // Find the first video stream
       int videoStream = -1;
+      int audioStream = -1;
       AVCodecParameters *codec_parameters = NULL;
       const AVCodec *av_codec = NULL;
       for (int i = 0; i < (int)format_context->nb_streams; ++i) {
@@ -299,11 +300,17 @@ int main(int argc, char *argv[]) {
         if (!av_codec) continue;
         if (codec_parameters->codec_type == AVMEDIA_TYPE_VIDEO) {
           videoStream = i;
-          break;
+        } else if (codec_parameters->codec_type == AVMEDIA_TYPE_AUDIO){
+          audioStream = i;
         }
       }
       if (videoStream == -1)
         return false;
+      if (audioStream == -1)
+        return false;
+
+      codec_parameters = format_context->streams[videoStream]->codecpar;
+      av_codec = avcodec_find_decoder(codec_parameters->codec_id);
 
       // Frames per second; calculate wait time between frames.
       AVStream *const stream = format_context->streams[videoStream];
