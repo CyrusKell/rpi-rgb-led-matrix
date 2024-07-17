@@ -310,16 +310,16 @@ int main(int argc, char *argv[]) {
         return false;
 
       // Frames per second; calculate wait time between frames.
-      AVStream *const stream = format_context->streams[videoStream];
-      AVRational rate = av_guess_frame_rate(format_context, stream, NULL);
+      AVStream *const video_stream = format_context->streams[videoStream];
+      AVRational rate = av_guess_frame_rate(format_context, video_stream, NULL);
       const long frame_wait_nanos = 1e9 * rate.den / rate.num;
       if (verbose) fprintf(stderr, "FPS: %f\n", 1.0*rate.num / rate.den);
 
-      codec_parameters = format_context->streams[videoStream]->codecpar;
-      av_codec = avcodec_find_decoder(codec_parameters->codec_id);
-      AVCodecContext *codec_context = avcodec_alloc_context3(av_codec);
+      AVCodecParameters *video_codec_parameters = video_stream->codecpar;
+      const AVCodec *video_av_codec = avcodec_find_decoder(video_codec_parameters->codec_id);
+      AVCodecContext *codec_context = avcodec_alloc_context3(video_av_codec);
       if (thread_count > 1 &&
-          av_codec->capabilities & AV_CODEC_CAP_FRAME_THREADS &&
+          video_av_codec->capabilities & AV_CODEC_CAP_FRAME_THREADS &&
           std::thread::hardware_concurrency() > 1) {
         codec_context->thread_type = FF_THREAD_FRAME;
         codec_context->thread_count =
@@ -328,7 +328,7 @@ int main(int argc, char *argv[]) {
 
       if (avcodec_parameters_to_context(codec_context, codec_parameters) < 0)
         return -1;
-      if (avcodec_open2(codec_context, av_codec, NULL) < 0)
+      if (avcodec_open2(codec_context, video_av_codec, NULL) < 0)
         return -1;
 
       /*
