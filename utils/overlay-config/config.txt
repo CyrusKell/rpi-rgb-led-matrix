@@ -1,1 +1,1 @@
-night-mode=off
+night-mode=on
