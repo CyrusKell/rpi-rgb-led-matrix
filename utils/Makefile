@@ -2,8 +2,8 @@ CXXFLAGS=-O3 -W -Wall -Wextra -Wno-unused-parameter -D_FILE_OFFSET_BITS=64
 OBJECTS=led-image-viewer.o led-image-viewer-overlay.o text-scroller.o
 BINARIES=led-image-viewer led-image-viewer-overlay text-scroller
 
-OPTIONAL_OBJECTS=video-viewer.o
-OPTIONAL_BINARIES=video-viewer
+OPTIONAL_OBJECTS=video-viewer.o video-viewer-a.o
+OPTIONAL_BINARIES=video-viewer video-viewer-a
 
 # Where our library resides. You mostly only need to change the
 # RGB_LIB_DISTRIBUTION, this is where the library is checked out.
@@ -38,6 +38,9 @@ led-image-viewer-overlay: led-image-viewer-overlay.o $(RGB_LIBRARY)
 
 video-viewer: video-viewer.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) video-viewer.o -o $@ $(LDFLAGS) $(RGB_LDFLAGS) $(AV_LDFLAGS)
+
+video-viewer-a: video-viewer-a.o $(RGB_LIBRARY)
+	$(CXX) $(CXXFLAGS) video-viewer-a.o -o $@ $(LDFLAGS) $(RGB_LDFLAGS) $(AV_LDFLAGS)
 
 %.o : %.cc
 	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) -c -o $@ $<
