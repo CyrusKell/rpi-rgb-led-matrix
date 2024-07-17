@@ -295,7 +295,7 @@ int main(int argc, char *argv[]) {
       AVCodecParameters *codec_parameters = NULL;
       const AVCodec *av_codec = NULL;
       for (int i = 0; i < (int)format_context->nb_streams; ++i) {
-        codec_parameters = format_context->streams[i]->codecpar;
+        codec_parameters = format_context->streams[videoStream]->codecpar;
         av_codec = avcodec_find_decoder(codec_parameters->codec_id);
         if (!av_codec) continue;
         if (codec_parameters->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -315,6 +315,8 @@ int main(int argc, char *argv[]) {
       const long frame_wait_nanos = 1e9 * rate.den / rate.num;
       if (verbose) fprintf(stderr, "FPS: %f\n", 1.0*rate.num / rate.den);
 
+      codec_parameters = format_context->streams[videoStream]->codecpar;
+      av_codec = avcodec_find_decoder(codec_parameters->codec_id);
       AVCodecContext *codec_context = avcodec_alloc_context3(av_codec);
       if (thread_count > 1 &&
           av_codec->capabilities & AV_CODEC_CAP_FRAME_THREADS &&
