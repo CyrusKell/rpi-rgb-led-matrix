@@ -381,6 +381,7 @@ int main(int argc, char *argv[]) {
       AVPacket *packet = av_packet_alloc();
       AVFrame *decode_frame = av_frame_alloc();  // Decode video into this
       do {
+        system("ffplay -nodisp /home/cyrus/starwarsclock/sw-preview.mp4");
         int64_t frames_left = framecount_limit;
         unsigned int frames_to_skip = frame_skip;
         if (one_video_forever) {
