@@ -291,35 +291,29 @@ int main(int argc, char *argv[]) {
 
       // Find the first video stream
       int videoStream = -1;
-      int audioStream = -1;
       AVCodecParameters *codec_parameters = NULL;
       const AVCodec *av_codec = NULL;
       for (int i = 0; i < (int)format_context->nb_streams; ++i) {
-        codec_parameters = format_context->streams[videoStream]->codecpar;
+        codec_parameters = format_context->streams[i]->codecpar;
         av_codec = avcodec_find_decoder(codec_parameters->codec_id);
         if (!av_codec) continue;
         if (codec_parameters->codec_type == AVMEDIA_TYPE_VIDEO) {
           videoStream = i;
-        } else if (codec_parameters->codec_type == AVMEDIA_TYPE_AUDIO) {
-          audioStream = i;
+          break;
         }
       }
       if (videoStream == -1)
         return false;
-      if (audioStream == -1)
-        return false;
 
       // Frames per second; calculate wait time between frames.
-      AVStream *const video_stream = format_context->streams[videoStream];
-      AVRational rate = av_guess_frame_rate(format_context, video_stream, NULL);
+      AVStream *const stream = format_context->streams[videoStream];
+      AVRational rate = av_guess_frame_rate(format_context, stream, NULL);
       const long frame_wait_nanos = 1e9 * rate.den / rate.num;
       if (verbose) fprintf(stderr, "FPS: %f\n", 1.0*rate.num / rate.den);
 
-      AVCodecParameters *video_codec_parameters = video_stream->codecpar;
-      const AVCodec *video_av_codec = avcodec_find_decoder(video_codec_parameters->codec_id);
-      AVCodecContext *codec_context = avcodec_alloc_context3(video_av_codec);
+      AVCodecContext *codec_context = avcodec_alloc_context3(av_codec);
       if (thread_count > 1 &&
-          video_av_codec->capabilities & AV_CODEC_CAP_FRAME_THREADS &&
+          av_codec->capabilities & AV_CODEC_CAP_FRAME_THREADS &&
           std::thread::hardware_concurrency() > 1) {
         codec_context->thread_type = FF_THREAD_FRAME;
         codec_context->thread_count =
@@ -328,7 +322,7 @@ int main(int argc, char *argv[]) {
 
       if (avcodec_parameters_to_context(codec_context, codec_parameters) < 0)
         return -1;
-      if (avcodec_open2(codec_context, video_av_codec, NULL) < 0)
+      if (avcodec_open2(codec_context, av_codec, NULL) < 0)
         return -1;
 
       /*
@@ -400,53 +394,52 @@ int main(int argc, char *argv[]) {
           if (!state_reading && decode_in_flight == 0)
             break;  // Decoder fully drained.
 
-          // Handle packet from video stream
-          if (packet->stream_index == videoStream) {
-            if (state_reading) {
-              // Decode video frame
-              if (avcodec_send_packet(codec_context, packet) == 0) {
-                ++decode_in_flight;
-              }
-              av_packet_unref(packet);
+          // Is this a packet from the video stream?
+          if (state_reading && packet->stream_index != videoStream) {
+            av_packet_unref(packet);
+            continue;  // Not interested in that.
+          }
+
+          if (state_reading) {
+            // Decode video frame
+            if (avcodec_send_packet(codec_context, packet) == 0) {
+              ++decode_in_flight;
+            }
+            av_packet_unref(packet);
+          } else {
+            avcodec_send_packet(codec_context, nullptr); // Trigger decode drain
+          }
+
+          while (decode_in_flight &&
+                 avcodec_receive_frame(codec_context, decode_frame) == 0) {
+            --decode_in_flight;
+
+            if (frames_to_skip) { frames_to_skip--; continue; }
+
+            // Determine absolute end of this frame now so that we don't include
+            // decoding overhead. TODO: skip frames if getting too slow ?
+            add_nanos(&next_frame, frame_wait_nanos);
+
+            // Convert the image from its native format to RGB
+            sws_scale(sws_ctx, (uint8_t const * const *)decode_frame->data,
+                      decode_frame->linesize, 0, codec_context->height,
+                      output_frame->data, output_frame->linesize);
+            CopyFrame(output_frame, offscreen_canvas,
+                      display_offset_x, display_offset_y,
+                      display_width, display_height);
+            frame_count++;
+            frames_left--;
+            if (stream_writer) {
+              if (verbose) fprintf(stderr, "%6ld", frame_count);
+              stream_writer->Stream(*offscreen_canvas, frame_wait_nanos/1000);
             } else {
-              avcodec_send_packet(codec_context, nullptr); // Trigger decode drain
+              offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
+                                                     vsync_multiple);
             }
-
-            while (decode_in_flight &&
-                  avcodec_receive_frame(codec_context, decode_frame) == 0) {
-              --decode_in_flight;
-
-              if (frames_to_skip) { frames_to_skip--; continue; }
-
-              // Determine absolute end of this frame now so that we don't include
-              // decoding overhead. TODO: skip frames if getting too slow ?
-              add_nanos(&next_frame, frame_wait_nanos);
-
-              // Convert the image from its native format to RGB
-              sws_scale(sws_ctx, (uint8_t const * const *)decode_frame->data,
-                        decode_frame->linesize, 0, codec_context->height,
-                        output_frame->data, output_frame->linesize);
-              CopyFrame(output_frame, offscreen_canvas,
-                        display_offset_x, display_offset_y,
-                        display_width, display_height);
-              frame_count++;
-              frames_left--;
-              if (stream_writer) {
-                if (verbose) fprintf(stderr, "%6ld", frame_count);
-                stream_writer->Stream(*offscreen_canvas, frame_wait_nanos/1000);
-              } else {
-                offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas,
-                                                      vsync_multiple);
-              }
-              if (!stream_writer && !use_vsync_for_frame_timing) {
-                clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_frame, NULL);
-              }
+            if (!stream_writer && !use_vsync_for_frame_timing) {
+              clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_frame, NULL);
             }
-          // Handle packet from audio stream
-          } else if(packet->stream_index == audioStream) {
-              // HANDLE AUDIO DECODE
-          } 
-            
+          }
         }
       } while (one_video_forever && !interrupt_received);
 
