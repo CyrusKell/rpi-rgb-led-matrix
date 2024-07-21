@@ -192,8 +192,9 @@ void DisplayAnimation(const FileInfo *file,
   // skip random number of frames
   uint32_t d = 0;
   srand(time(0));
-  const TOTAL_NUM_FRAMES = 1158960;
-  int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
+  const int TOTAL_NUM_FRAMES = 1158960;
+  // int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
+  int frames_to_skip = 20000;
   for(int i = 0; i < frames_to_skip; i++) {
     reader.GetNext(offscreen_canvas, &d);
   }
