@@ -189,13 +189,6 @@ void DisplayAnimation(const FileInfo *file,
   const tmillis_t end_time_ms = GetTimeInMillis() + duration_ms;
   const tmillis_t override_anim_delay = file->params.anim_delay_ms;
 
-  // skip random number of frames
-  srand(time(0));
-  const int TOTAL_NUM_FRAMES = 1158960;
-  int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
-  frames_to_skip = 20000;
-  int frames_skipped = 0;
-
   for (int k = 0;
        (loops < 0 || k < loops)
          && !interrupt_received
@@ -204,9 +197,6 @@ void DisplayAnimation(const FileInfo *file,
     uint32_t delay_us = 0;
     while (!interrupt_received && GetTimeInMillis() <= end_time_ms
            && reader.GetNext(offscreen_canvas, &delay_us)) {  
-      // skip frame if needed
-      std::cout << frames_skipped << "\n";
-      if(frames_skipped++ < frames_to_skip) continue;
 
       const tmillis_t anim_delay_ms =
         override_anim_delay >= 0 ? override_anim_delay : delay_us / 1000;
