@@ -190,7 +190,6 @@ void DisplayAnimation(const FileInfo *file,
   const tmillis_t override_anim_delay = file->params.anim_delay_ms;
 
   // skip random number of frames
-  uint32_t d = 0;
   srand(time(0));
   const int TOTAL_NUM_FRAMES = 1158960;
   int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
