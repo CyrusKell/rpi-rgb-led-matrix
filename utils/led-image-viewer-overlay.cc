@@ -193,7 +193,7 @@ void DisplayAnimation(const FileInfo *file,
   srand(time(0));
   const int TOTAL_NUM_FRAMES = 1158960;
   int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
-  frames_to_skip = 1000;
+  frames_to_skip = 20000;
   int frames_skipped = 0;
 
   for (int k = 0;
@@ -204,8 +204,9 @@ void DisplayAnimation(const FileInfo *file,
     uint32_t delay_us = 0;
     while (!interrupt_received && GetTimeInMillis() <= end_time_ms
            && reader.GetNext(offscreen_canvas, &delay_us)) {  
-      // skip frame if neede
-      //if(frames_skipped++ < frames_to_skip) continue;
+      // skip frame if needed
+      std::cout << frames_skipped << "\n";
+      if(frames_skipped++ < frames_to_skip) continue;
 
       const tmillis_t anim_delay_ms =
         override_anim_delay >= 0 ? override_anim_delay : delay_us / 1000;
@@ -259,7 +260,7 @@ void DisplayAnimation(const FileInfo *file,
                                              file->params.vsync_multiple);
 
       const tmillis_t time_already_spent = GetTimeInMillis() - start_wait_ms;
-      if(frames_skipped++ > frames_to_skip) SleepMillis(anim_delay_ms - time_already_spent);
+      SleepMillis(anim_delay_ms - time_already_spent);
     }
     reader.Rewind();
   }
