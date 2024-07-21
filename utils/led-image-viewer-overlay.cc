@@ -179,23 +179,6 @@ static bool LoadImageAndScale(const char *filename,
   return true;
 }
 
-void SetConfig(std::map<std::string, std::string>& config) {
-  std::string config_file_url = "/home/cyrus/starwarsclock/rpi-rgb-led-matrix/utils/overlay-config/config.txt";
-  std::ifstream config_file (config_file_url);
-
-  if (config_file.is_open())
-  {
-      std::string line;
-      while(getline(config_file, line)){
-          auto delimiterPos = line.find("=");
-          auto key = line.substr(0, delimiterPos);
-          auto value = line.substr(delimiterPos + 1);
-          config[key] = value;
-      }
-      
-  }
-}
-
 void DisplayAnimation(const FileInfo *file,
                       RGBMatrix *matrix, FrameCanvas *offscreen_canvas) {
   const tmillis_t duration_ms = (file->is_multi_frame
@@ -205,11 +188,6 @@ void DisplayAnimation(const FileInfo *file,
   int loops = file->params.loops;
   const tmillis_t end_time_ms = GetTimeInMillis() + duration_ms;
   const tmillis_t override_anim_delay = file->params.anim_delay_ms;
-
-  tmillis_t config_check_time = GetTimeInMillis();
-  std::map<std::string, std::string> config;
-  SetConfig(config);
-
 
   for (int k = 0;
        (loops < 0 || k < loops)
@@ -224,12 +202,6 @@ void DisplayAnimation(const FileInfo *file,
       const tmillis_t start_wait_ms = GetTimeInMillis();
 
       // overlay
-
-      // reload config settings if it has been 5 minutes since last config check
-      if(GetTimeInMillis() - config_check_time >= 5 * 60 *1000) {
-        config_check_time = GetTimeInMillis();
-        SetConfig(config);
-      }
 
       // load font
       rgb_matrix::Font font;
@@ -264,11 +236,6 @@ void DisplayAnimation(const FileInfo *file,
       time (&rawtime);
       timeinfo = localtime (&rawtime);
       strftime (line1,80,"%-I:%M",timeinfo);
-
-      // set everything to black if night mode is enabled
-      if(config["night-mode"] == "on") {
-        offscreen_canvas->Fill(0, 0, 0);
-      }
 
       // draw text
       rgb_matrix::DrawText(offscreen_canvas, font, x1, y1 + font.baseline(),
