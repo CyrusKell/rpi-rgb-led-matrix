@@ -225,8 +225,8 @@ void DisplayAnimation(const FileInfo *file,
 
       // overlay
 
-      // reload config settings if it has been 1 seconds since last config check
-      if(GetTimeInMillis() - config_check_time >= 1000) {
+      // reload config settings if it has been 5 minutes since last config check
+      if(GetTimeInMillis() - config_check_time >= 5 * 60 *1000) {
         config_check_time = GetTimeInMillis();
         SetConfig(config);
       }
