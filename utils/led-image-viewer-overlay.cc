@@ -189,6 +189,12 @@ void DisplayAnimation(const FileInfo *file,
   const tmillis_t end_time_ms = GetTimeInMillis() + duration_ms;
   const tmillis_t override_anim_delay = file->params.anim_delay_ms;
 
+  // skip random number of frames
+  int frames_to_skip = 1000;
+  for(int i = 0; i < frames_to_skip; i++) {
+    reader.GetNext(offscreen_canvas, &delay_us);
+  }
+
   for (int k = 0;
        (loops < 0 || k < loops)
          && !interrupt_received
