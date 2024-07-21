@@ -90,7 +90,6 @@ public:
   // Get next frame and its timestamp. Returns 'false' if there is an error
   // or end of stream reached..
   bool GetNext(FrameCanvas *frame, uint32_t* hold_time_us);
-  void SkipFrames(int frames_to_skip);
 
 private:
   enum State {
