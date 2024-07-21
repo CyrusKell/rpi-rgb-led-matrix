@@ -193,11 +193,8 @@ void DisplayAnimation(const FileInfo *file,
   uint32_t d = 0;
   srand(time(0));
   const int TOTAL_NUM_FRAMES = 1158960;
-  // int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
-  int frames_to_skip = 20000;
-  for(int i = 0; i < frames_to_skip; i++) {
-    reader.GetNext(offscreen_canvas, &d);
-  }
+  int frames_to_skip = rand() % TOTAL_NUM_FRAMES;
+  int frames_skipped = 0;
 
   for (int k = 0;
        (loops < 0 || k < loops)
@@ -206,7 +203,10 @@ void DisplayAnimation(const FileInfo *file,
        ++k) {
     uint32_t delay_us = 0;
     while (!interrupt_received && GetTimeInMillis() <= end_time_ms
-           && reader.GetNext(offscreen_canvas, &delay_us)) {
+           && reader.GetNext(offscreen_canvas, &delay_us)) {  
+      // skip frame if neede
+      if(frames_skipped++ < frames_to_skip) continue;
+
       const tmillis_t anim_delay_ms =
         override_anim_delay >= 0 ? override_anim_delay : delay_us / 1000;
       const tmillis_t start_wait_ms = GetTimeInMillis();
