@@ -623,6 +623,39 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+/**
+ * Initialize the given PacketQueue.
+ *
+ * @param   q   the PacketQueue to be initialized.
+ */
+void packet_queue_init(PacketQueue * q)
+{
+    // alloc memory for the audio queue
+    memset(
+        q,
+        0,
+        sizeof(PacketQueue)
+      );
+
+    // Returns the initialized and unlocked mutex or NULL on failure
+    q->mutex = SDL_CreateMutex();
+    if (!q->mutex)
+    {
+        // could not create mutex
+        printf("SDL_CreateMutex Error: %s.\n", SDL_GetError());
+        return;
+    }
+
+    // Returns a new condition variable or NULL on failure
+    q->cond = SDL_CreateCond();
+    if (!q->cond)
+    {
+        // could not create condition variable
+        printf("SDL_CreateCond Error: %s.\n", SDL_GetError());
+        return;
+    }
+}
+
 
 /**
  * Put the given AVPacket in the given PacketQueue.
