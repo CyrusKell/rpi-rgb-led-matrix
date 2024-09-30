@@ -18,7 +18,9 @@ RGB_LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
 MAGICK_CXXFLAGS?=$(shell GraphicsMagick++-config --cppflags --cxxflags)
 MAGICK_LDFLAGS?=$(shell GraphicsMagick++-config --ldflags --libs)
 AV_CXXFLAGS=$(shell pkg-config --cflags  libavcodec libavformat libswscale libavutil libavdevice)
-AV_LDFLAGS=$(shell pkg-config --cflags --libs  libavcodec libavformat libswscale libavutil libavdevice)
+AV_LDFLAGS=$(shell pkg-config --cflags --libs  libavcodec libavformat libswscale libavutil libavdevice libswresample)
+SDL_CXXFLAGS=$(shell sdl2-config --cflags)
+SDL_LDFLAGS=$(shell sdl2-config --libs)
 
 simple: $(BINARIES)
 
@@ -34,13 +36,16 @@ led-image-viewer: led-image-viewer.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) led-image-viewer.o -o $@ $(LDFLAGS) $(RGB_LDFLAGS) $(MAGICK_LDFLAGS)
 
 video-viewer: video-viewer.o $(RGB_LIBRARY)
-	$(CXX) $(CXXFLAGS) video-viewer.o -o $@ $(LDFLAGS) $(RGB_LDFLAGS) $(AV_LDFLAGS)
+	$(CXX) $(CXXFLAGS) video-viewer.o -o $@ $(LDFLAGS) $(RGB_LDFLAGS) $(AV_LDFLAGS) $(SDL_LDFLAGS)
 
 %.o : %.cc
 	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) -c -o $@ $<
 
 led-image-viewer.o : led-image-viewer.cc
 	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) $(MAGICK_CXXFLAGS) -c -o $@ $<
+
+video-viewer.o : video-viewer.cc
+	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) $(AV_CXXFLAGS) $(SDL_CXXFLAGS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJECTS) $(BINARIES) $(OPTIONAL_OBJECTS) $(OPTIONAL_BINARIES)
