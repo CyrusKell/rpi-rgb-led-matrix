@@ -338,7 +338,7 @@ int main(int argc, char *argv[]) {
 
     // Initialize SDL.
     int ret = -1;
-    ret = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
+    ret = SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER);
     if (ret != 0)
     {
         printf("Could not initialize SDL - %s\n.", SDL_GetError());
@@ -380,12 +380,10 @@ int main(int argc, char *argv[]) {
         if (!av_codec) continue;
         if (codec_parameters->codec_type == AVMEDIA_TYPE_VIDEO && videoStream < 0) {
           videoStream = i;
-          break;
         }
 
         if (codec_parameters->codec_type == AVMEDIA_TYPE_AUDIO && audioStream < 0) {
           audioStream = i;
-          break;
         }
       }
       if (videoStream == -1) {

@@ -17,10 +17,8 @@ RGB_LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
 # Imagemagic flags, only needed if actually compiled.
 MAGICK_CXXFLAGS?=$(shell GraphicsMagick++-config --cppflags --cxxflags)
 MAGICK_LDFLAGS?=$(shell GraphicsMagick++-config --ldflags --libs)
-AV_CXXFLAGS=$(shell pkg-config --cflags  libavcodec libavformat libswscale libavutil libavdevice)
-AV_LDFLAGS=$(shell pkg-config --cflags --libs  libavcodec libavformat libswscale libavutil libavdevice libswresample)
-SDL_CXXFLAGS=$(shell sdl2-config --cflags)
-SDL_LDFLAGS=$(shell sdl2-config --libs)
+AV_CXXFLAGS=$(shell pkg-config --cflags --libs sdl2 libavcodec libavformat libswscale libavutil libavdevice libswsresample)
+AV_LDFLAGS=$(shell pkg-config --cflags --libs sdl2 libavcodec libavformat libswscale libavutil libavdevice libswresample)
 
 simple: $(BINARIES)
 
