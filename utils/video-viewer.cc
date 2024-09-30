@@ -76,7 +76,7 @@ void CopyFrame(AVFrame *pFrame, FrameCanvas *canvas,
 }
 
 // Scale "width" and "height" to fit within target rectangle of given size.
-void ScaleToFitKeepAscpet(int fit_in_width, int fit_in_height,
+void ScaleToFitKeepAspect(int fit_in_width, int fit_in_height,
                           int *width, int *height) {
   if (*height < fit_in_height && *width < fit_in_width) return; // Done.
   const float height_ratio = 1.0 * (*height) / fit_in_height;
@@ -336,7 +336,7 @@ int main(int argc, char *argv[]) {
         display_width = codec_context->width;
         display_height = codec_context->height;
         // Make display fit within canvas.
-        ScaleToFitKeepAscpet(matrix->width(), matrix->height(),
+        ScaleToFitKeepAspect(matrix->width(), matrix->height(),
                              &display_width, &display_height);
       } else {
         display_width = matrix->width();
